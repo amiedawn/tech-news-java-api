@@ -42,8 +42,6 @@ public class Post {
     // Need to use FetchType.LAZY to resolve multiple bags exception
     @OneToMany(mappedBy = "postId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;
-
-
     public Post() {
     }
 
