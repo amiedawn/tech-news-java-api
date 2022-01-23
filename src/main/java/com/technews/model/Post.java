@@ -1,32 +1,28 @@
 package com.technews.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import groovyjarjarantlr4.v4.runtime.misc.NotNull;
+import com.sun.istack.NotNull;
 
 import javax.persistence.*;
-import javax.xml.stream.events.Comment;
-import java.util.List;
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "post")
-public class Post {
+public class Post implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer Id;
-
+    private Integer id;
     private String title;
     private String postUrl;
-
     @Transient
     private String userName;
-
     @Transient
     private int voteCount;
-
-
     private Integer userId;
 
     @NotNull
@@ -42,24 +38,25 @@ public class Post {
     // Need to use FetchType.LAZY to resolve multiple bags exception
     @OneToMany(mappedBy = "postId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;
+
+
     public Post() {
     }
 
-    public Post(Integer id, String title, String postUrl, String userName, int voteCount, Integer userId) {
-        Id = id;
+    public Post(Integer id, String title, String postUrl, int voteCount, Integer userId) {
+        this.id = id;
         this.title = title;
         this.postUrl = postUrl;
-        this.userName = userName;
         this.voteCount = voteCount;
         this.userId = userId;
     }
 
     public Integer getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Integer id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getTitle() {
@@ -129,20 +126,28 @@ public class Post {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Post)) return false;
         Post post = (Post) o;
-        return voteCount == post.voteCount && Objects.equals(Id, post.Id) && Objects.equals(title, post.title) && Objects.equals(postUrl, post.postUrl) && Objects.equals(userName, post.userName) && Objects.equals(userId, post.userId) && Objects.equals(postedAt, post.postedAt) && Objects.equals(updatedAt, post.updatedAt) && Objects.equals(comments, post.comments);
+        return getVoteCount() == post.getVoteCount() &&
+                Objects.equals(getId(), post.getId()) &&
+                Objects.equals(getTitle(), post.getTitle()) &&
+                Objects.equals(getPostUrl(), post.getPostUrl()) &&
+                Objects.equals(getUserName(), post.getUserName()) &&
+                Objects.equals(getUserId(), post.getUserId()) &&
+                Objects.equals(getPostedAt(), post.getPostedAt()) &&
+                Objects.equals(getUpdatedAt(), post.getUpdatedAt()) &&
+                Objects.equals(getComments(), post.getComments());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Id, title, postUrl, userName, voteCount, userId, postedAt, updatedAt, comments);
+        return Objects.hash(getId(), getTitle(), getPostUrl(), getUserName(), getVoteCount(), getUserId(), getPostedAt(), getUpdatedAt(), getComments());
     }
 
     @Override
     public String toString() {
         return "Post{" +
-                "Id=" + Id +
+                "id=" + id +
                 ", title='" + title + '\'' +
                 ", postUrl='" + postUrl + '\'' +
                 ", userName='" + userName + '\'' +
